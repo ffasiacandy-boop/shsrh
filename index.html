@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Inkwell Tees</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: slim sticky header, compact left-aligned hero, two big product cards side by side, cart drawer from the right, checkout in a modal. */
+:root {
+  --bg: #eceef2;
+  --surface: #ffffff;
+  --ink: #12141c;
+  --muted: #5a6072;
+  --line: #d5d8e0;
+  --accent: #f0c419;
+  --accent-ink: #12141c;
+  --frame-a: #d9dade;
+  --frame-b: #ffffff;
+  --danger: #b3261e;
+  --ok: #1a7f4b;
+  --shadow: 0 10px 30px rgba(18, 20, 28, .12);
+  --font-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1117; --surface: #181b25; --ink: #eceef4; --muted: #9aa1b5; --line: #2b3040;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .5); --danger: #ff8a80; --ok: #5fd39a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1117; --surface: #181b25; --ink: #eceef4; --muted: #9aa1b5; --line: #2b3040;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .5); --danger: #ff8a80; --ok: #5fd39a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.brand { font-family: var(--font-display); font-weight: 900; font-size: 1.7rem; letter-spacing: .02em; text-transform: uppercase; display: flex; align-items: center; gap: 10px; line-height: 1; }
+.brand i { width: 14px; height: 14px; background: var(--accent); display: block; transform: rotate(45deg); }
+.cart-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--bg); border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 600; }
+.cart-btn .count { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .8rem; font-weight: 700; display: grid; place-items: center; font-family: var(--font-mono); }
+
+/* Hero */
+.hero { padding-block: 40px 28px; }
+.hero h1 { font-family: var(--font-display); font-weight: 900; text-transform: uppercase; font-size: clamp(2.6rem, 9vw, 5.4rem); line-height: .92; letter-spacing: .005em; margin: 0 0 14px; text-wrap: balance; max-width: 14ch; }
+.hero p { margin: 0; color: var(--muted); max-width: 52ch; }
+.specs { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 22px 0 0; padding: 0; list-style: none; font-family: var(--font-mono); font-size: .8rem; letter-spacing: .04em; text-transform: uppercase; }
+.specs li { display: flex; align-items: center; gap: 8px; }
+.specs li::before { content: ""; width: 8px; height: 8px; background: var(--accent); }
+
+/* Products */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 24px; padding-bottom: 40px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.frame { position: relative; aspect-ratio: 1 / 1; max-width: 100%; background: var(--frame); overflow: hidden; }
+.frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.chip { position: absolute; top: 14px; left: 14px; background: var(--accent); color: var(--accent-ink); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; padding: 5px 9px; border-radius: 4px; }
+.body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.title-row h2 { margin: 0; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; font-size: 2rem; line-height: 1; }
+.meta { margin: 6px 0 0; color: var(--muted); font-size: .92rem; display: flex; align-items: center; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); display: inline-block; }
+.price { text-align: right; line-height: 1.1; }
+.price b { font-family: var(--font-display); font-size: 2rem; font-weight: 800; }
+.price s { display: block; color: var(--muted); font-size: .85rem; }
+.label { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; }
+.sizes { display: flex; flex-wrap: wrap; gap: 8px; }
+.size { min-width: 52px; height: 44px; padding: 0 14px; border: 1.5px solid var(--line); background: transparent; border-radius: 8px; font-weight: 600; }
+.size[aria-checked="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.qty { display: inline-flex; align-items: center; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; }
+.qty button { width: 44px; height: 44px; border: 0; background: transparent; font-size: 1.25rem; }
+.qty output { min-width: 40px; text-align: center; font-family: var(--font-mono); font-weight: 500; }
+.buy { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { height: 52px; border-radius: 10px; border: 2px solid var(--ink); background: transparent; font-weight: 700; font-size: 1rem; letter-spacing: .01em; }
+.btn.solid { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.try { grid-column: 1 / -1; height: 46px; border-style: dashed; border-width: 1.5px; }
+.row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+/* Size guide */
+.guide { padding-bottom: 56px; }
+.guide details { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; }
+.guide summary { font-weight: 700; cursor: pointer; }
+.table-scroll { overflow-x: auto; margin-top: 14px; }
+table { border-collapse: collapse; width: 100%; min-width: 360px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--font-mono); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 500; }
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+footer .wrap { padding-block: 22px calc(22px + env(safe-area-inset-bottom, 0px)); }
+
+/* Cart drawer */
+.scrim { position: fixed; inset: 0; background: rgba(8, 10, 16, .55); opacity: 0; visibility: hidden; transition: opacity .2s; z-index: 40; }
+.scrim.open { opacity: 1; visibility: visible; }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(100%, 420px); background: var(--surface); z-index: 50; display: flex; flex-direction: column; transform: translateX(105%); transition: transform .25s ease; box-shadow: var(--shadow); visibility: hidden; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.drawer.open { transform: none; visibility: visible; }
+.drawer-head, .drawer-foot { padding: 16px 20px; }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.drawer-head h2 { margin: 0; font-family: var(--font-display); text-transform: uppercase; font-size: 1.6rem; font-weight: 800; }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: transparent; font-size: 1.2rem; line-height: 1; }
+.lines { flex: 1; overflow-y: auto; padding: 8px 20px; }
+.line { display: grid; grid-template-columns: 72px 1fr auto; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.line img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; background: var(--frame-a); display: block; }
+.line h3 { margin: 0; font-size: 1rem; }
+.line p { margin: 2px 0 8px; color: var(--muted); font-size: .85rem; }
+.line .qty button { width: 34px; height: 34px; }
+.line .qty output { min-width: 30px; }
+.line .amt { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.link-btn { background: none; border: 0; color: var(--muted); text-decoration: underline; font-size: .8rem; padding: 6px 0 0; }
+.empty { text-align: center; color: var(--muted); padding: 48px 12px; }
+.empty .btn { margin-top: 16px; padding: 0 22px; }
+.sum { display: grid; gap: 6px; margin-bottom: 14px; font-variant-numeric: tabular-nums; }
+.sum div { display: flex; justify-content: space-between; color: var(--muted); }
+.sum .total { color: var(--ink); font-weight: 700; font-size: 1.15rem; padding-top: 8px; border-top: 1px solid var(--line); }
+.drawer-foot { border-top: 1px solid var(--line); }
+.drawer-foot .btn { width: 100%; }
+.note { color: var(--muted); font-size: .8rem; margin: 10px 0 0; }
+
+/* Checkout modal */
+.modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(8, 10, 16, .6); overflow-y: auto; }
+.sheet { background: var(--surface); border-radius: 16px; width: min(100%, 560px); max-height: 100%; overflow-y: auto; padding: 22px; box-shadow: var(--shadow); }
+.sheet h2 { margin: 0 0 4px; font-family: var(--font-display); text-transform: uppercase; font-size: 2rem; font-weight: 800; }
+.sheet .sub { margin: 0 0 16px; color: var(--muted); }
+.mini { border: 1px solid var(--line); border-radius: 10px; padding: 4px 14px; margin-bottom: 18px; }
+.mini .m { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.mini .m:last-child { border-bottom: 0; font-weight: 700; }
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: .82rem; font-weight: 600; }
+.field input, .field textarea { border: 1.5px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.field input:invalid:not(:placeholder-shown), .field textarea:invalid:not(:placeholder-shown) { border-color: var(--danger); }
+.pay { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 0; padding: 0; margin: 0; grid-column: 1 / -1; }
+.pay legend { font-size: .82rem; font-weight: 600; margin-bottom: 6px; padding: 0; }
+.pay label { border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; font-size: .92rem; }
+.pay input { accent-color: var(--ink); }
+.sheet .actions { grid-column: 1 / -1; display: flex; gap: 12px; margin-top: 6px; }
+.sheet .actions .btn { flex: 1; }
+.success { text-align: center; padding: 18px 4px; }
+.success .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #fff; display: grid; place-items: center; font-size: 2rem; margin: 0 auto 14px; }
+.success .oid { font-family: var(--font-mono); background: var(--bg); padding: 4px 10px; border-radius: 6px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 999px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 80; max-width: calc(100% - 32px); text-align: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 520px) {
+  .form { grid-template-columns: 1fr; }
+  .buy { grid-template-columns: 1fr; }
+  .price { text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .btn:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><i aria-hidden="true"></i>Inkwell Tees</div>
+    <button class="cart-btn" id="openCart" type="button" aria-label="Open cart">
+      <span>Cart</span><span class="count" id="count">0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <h1>Heavy cotton tees, ready for your print</h1>
+    <p>Two crew-neck classics. Pick your size, add to cart, or buy it right now.</p>
+    <ul class="specs">
+      <li>180 GSM cotton</li>
+      <li>Pre-shrunk</li>
+      <li>Sizes S to XXL</li>
+      <li>Free shipping over ₹999</li>
+    </ul>
+  </section>
+
+  <section class="wrap" aria-label="Products">
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="wrap guide">
+    <details>
+      <summary>Size guide (in inches)</summary>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Sleeve</th></tr></thead>
+          <tbody>
+            <tr><td>S</td><td>38</td><td>27</td><td>8.5</td></tr>
+            <tr><td>M</td><td>40</td><td>28</td><td>8.75</td></tr>
+            <tr><td>L</td><td>42</td><td>29</td><td>9</td></tr>
+            <tr><td>XL</td><td>44</td><td>30</td><td>9.25</td></tr>
+            <tr><td>XXL</td><td>46</td><td>31</td><td>9.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer><div class="wrap">Inkwell Tees. Sample store: prices and products are placeholders.</div></footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <h2 id="drawerTitle">Your cart</h2>
+    <button class="icon-btn" id="closeCart" type="button" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="lines" id="lines"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="coTitle" id="sheet"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var IMG = { a: "images/black-tee.jpg", b: "images/navy-tee.jpg" };
+  var PRODUCTS = [
+    { id: "script-black", name: "Script Black Tee", color: "Black", swatch: "#1c1a22", price: 499, mrp: 699, img: "a", frame: "var(--frame-a)", tag: "Bestseller" },
+    { id: "block-navy", name: "Block Navy Tee", color: "Navy blue", swatch: "#24296b", price: 549, mrp: 749, img: "b", frame: "var(--frame-b)", tag: "New" }
+  ];
+  var SIZES = ["S", "M", "L", "XL", "XXL"];
+  var FREE_SHIP_AT = 999, SHIP_FEE = 60, KEY = "inkwell-cart-v1";
+
+  var sel = {};
+  PRODUCTS.forEach(function (p) { sel[p.id] = { size: "M", qty: 1 }; });
+  var cart = [];
+  try { cart = JSON.parse(localStorage.getItem(KEY) || "[]"); if (!Array.isArray(cart)) cart = []; } catch (e) { cart = []; }
+  cart = cart.filter(function (l) { return findP(l.id) && SIZES.indexOf(l.size) > -1 && l.qty > 0; });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  function findP(id) { for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].id === id) return PRODUCTS[i]; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
+
+  /* ---------- Product cards ---------- */
+  function renderGrid() {
+    $("grid").innerHTML = PRODUCTS.map(function (p) {
+      var s = sel[p.id];
+      var sizes = SIZES.map(function (z) {
+        return '<button type="button" class="size" role="radio" aria-checked="' + (s.size === z) + '" data-act="size" data-id="' + p.id + '" data-size="' + z + '">' + z + '</button>';
+      }).join("");
+      return '<article class="card" data-id="' + p.id + '">' +
+        '<div class="frame" style="--frame:' + p.frame + '"><img src="' + IMG[p.img] + '" alt="' + p.name + ', ' + p.color + ' crew-neck t-shirt"><span class="chip">' + p.tag + '</span></div>' +
+        '<div class="body">' +
+          '<div class="title-row"><div><h2>' + p.name + '</h2><p class="meta"><span class="dot" style="background:' + p.swatch + '"></span>' + p.color + ' &middot; Crew neck</p></div>' +
+          '<div class="price"><b>' + fmt.format(p.price) + '</b><s>' + fmt.format(p.mrp) + '</s></div></div>' +
+          '<div><p class="label"><span>Size</span></p><div class="sizes" role="radiogroup" aria-label="Size for ' + p.name + '">' + sizes + '</div></div>' +
+          '<div class="row"><div><p class="label"><span>Quantity</span></p><div class="qty"><button type="button" data-act="dec" data-id="' + p.id + '" aria-label="Decrease quantity">&minus;</button><output id="q-' + p.id + '">' + s.qty + '</output><button type="button" data-act="inc" data-id="' + p.id + '" aria-label="Increase quantity">+</button></div></div></div>' +
+          '<div class="buy"><button type="button" class="btn" data-act="add" data-id="' + p.id + '">Add to cart</button><button type="button" class="btn solid" data-act="buy" data-id="' + p.id + '">Buy now</button><button type="button" class="btn try" data-act="try" data-id="' + p.id + '">Try it on</button></div>' +
+        '</div></article>';
+    }).join("");
+  }
+
+  $("grid").addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-act]");
+    if (!b) return;
+    var id = b.dataset.id, s = sel[id], act = b.dataset.act;
+    if (act === "size") {
+      s.size = b.dataset.size;
+      var card = b.closest(".card");
+      card.querySelectorAll(".size").forEach(function (x) { x.setAttribute("aria-checked", String(x === b)); });
+    } else if (act === "inc") { s.qty = Math.min(10, s.qty + 1); $("q-" + id).textContent = s.qty; }
+    else if (act === "dec") { s.qty = Math.max(1, s.qty - 1); $("q-" + id).textContent = s.qty; }
+    else if (act === "add") { addToCart(id, s.size, s.qty); toast(findP(id).name + " (" + s.size + ") added to cart"); }
+    else if (act === "buy") { openCheckout([{ id: id, size: s.size, qty: s.qty }], false); }
+    else if (act === "try") { tryOn(id); }
+  });
+
+  /* ---------- Cart ---------- */
+  function addToCart(id, size, qty) {
+    var hit = cart.filter(function (l) { return l.id === id && l.size === size; })[0];
+    if (hit) hit.qty = Math.min(10, hit.qty + qty); else cart.push({ id: id, size: size, qty: qty });
+    save(); renderCart();
+  }
+  function totals(items) {
+    var sub = items.reduce(function (n, l) { return n + findP(l.id).price * l.qty; }, 0);
+    var ship = sub === 0 || sub >= FREE_SHIP_AT ? 0 : SHIP_FEE;
+    return { sub: sub, ship: ship, total: sub + ship };
+  }
+  function sumHtml(t) {
+    return '<div class="sum"><div><span>Subtotal</span><span>' + fmt.format(t.sub) + '</span></div>' +
+      '<div><span>Shipping</span><span>' + (t.ship ? fmt.format(t.ship) : "Free") + '</span></div>' +
+      '<div class="total"><span>Total</span><span>' + fmt.format(t.total) + '</span></div></div>';
+  }
+  function renderCart() {
+    var n = cart.reduce(function (a, l) { return a + l.qty; }, 0);
+    $("count").textContent = n;
+    var lines = $("lines"), foot = $("drawerFoot");
+    if (!cart.length) {
+      lines.innerHTML = '<div class="empty"><p>Your cart is empty.</p><button type="button" class="btn solid" data-cart="close">Browse tees</button></div>';
+      foot.innerHTML = ""; foot.hidden = true; return;
+    }
+    foot.hidden = false;
+    lines.innerHTML = cart.map(function (l, i) {
+      var p = findP(l.id);
+      return '<div class="line"><img src="' + IMG[p.img] + '" alt="">' +
+        '<div><h3>' + p.name + '</h3><p>Size ' + l.size + ' &middot; ' + fmt.format(p.price) + '</p>' +
+        '<div class="qty"><button type="button" data-cart="dec" data-i="' + i + '" aria-label="Decrease quantity">&minus;</button><output>' + l.qty + '</output><button type="button" data-cart="inc" data-i="' + i + '" aria-label="Increase quantity">+</button></div>' +
+        '<button type="button" class="link-btn" data-cart="rm" data-i="' + i + '">Remove</button></div>' +
+        '<div class="amt">' + fmt.format(p.price * l.qty) + '</div></div>';
+    }).join("");
+    var t = totals(cart);
+    var left = FREE_SHIP_AT - t.sub;
+    foot.innerHTML = sumHtml(t) + '<button type="button" class="btn solid" data-cart="checkout">Checkout</button>' +
+      '<p class="note">' + (left > 0 ? "Add " + fmt.format(left) + " more for free shipping." : "You get free shipping on this order.") + '</p>';
+  }
+  $("drawer").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cart]"); if (!b) return;
+    var a = b.dataset.cart, i = +b.dataset.i;
+    if (a === "inc") cart[i].qty = Math.min(10, cart[i].qty + 1);
+    else if (a === "dec") cart[i].qty = Math.max(1, cart[i].qty - 1);
+    else if (a === "rm") cart.splice(i, 1);
+    else if (a === "close") { closeCart(); return; }
+    else if (a === "checkout") { closeCart(); openCheckout(cart.slice(), true); return; }
+    save(); renderCart();
+  });
+
+  var lastFocus = null;
+  function openCart() {
+    lastFocus = document.activeElement;
+    $("scrim").classList.add("open"); $("drawer").classList.add("open"); $("drawer").setAttribute("aria-hidden", "false");
+    $("closeCart").focus();
+  }
+  function closeCart() {
+    $("scrim").classList.remove("open"); $("drawer").classList.remove("open"); $("drawer").setAttribute("aria-hidden", "true");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  $("openCart").addEventListener("click", openCart);
+  $("closeCart").addEventListener("click", closeCart);
+  $("scrim").addEventListener("click", closeCart);
+
+  /* ---------- Checkout ---------- */
+  var coItems = [], coFromCart = false;
+  function openCheckout(items, fromCart) {
+    coItems = items; coFromCart = fromCart;
+    var t = totals(items);
+    var rows = items.map(function (l) {
+      var p = findP(l.id);
+      return '<div class="m"><span>' + p.name + ' &middot; ' + l.size + ' &times; ' + l.qty + '</span><span>' + fmt.format(p.price * l.qty) + '</span></div>';
+    }).join("");
+    rows += '<div class="m"><span>Shipping</span><span>' + (t.ship ? fmt.format(t.ship) : "Free") + '</span></div>' +
+            '<div class="m"><span>Total</span><span>' + fmt.format(t.total) + '</span></div>';
+    $("sheet").innerHTML =
+      '<h2 id="coTitle">Checkout</h2><p class="sub">Tell us where to send your order.</p>' +
+      '<div class="mini">' + rows + '</div>' +
+      '<form class="form" id="coForm" novalidate>' +
+        '<div class="field"><label for="f-name">Full name</label><input id="f-name" required minlength="2" autocomplete="name" placeholder=" "></div>' +
+        '<div class="field"><label for="f-phone">Mobile number</label><input id="f-phone" required inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" autocomplete="tel-national" placeholder=" "></div>' +
+        '<div class="field full"><label for="f-addr">Address</label><textarea id="f-addr" rows="2" required minlength="8" autocomplete="street-address" placeholder=" "></textarea></div>' +
+        '<div class="field"><label for="f-city">City</label><input id="f-city" required autocomplete="address-level2" placeholder=" "></div>' +
+        '<div class="field"><label for="f-pin">PIN code</label><input id="f-pin" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="postal-code" placeholder=" "></div>' +
+        '<fieldset class="pay"><legend>Payment</legend>' +
+          '<label for="p-upi"><input type="radio" name="pay" id="p-upi" value="UPI" checked>UPI</label>' +
+          '<label for="p-cod"><input type="radio" name="pay" id="p-cod" value="Cash on delivery">Cash on delivery</label></fieldset>' +
+        '<p class="note full" style="grid-column:1/-1;margin:0" id="coMsg">Sample checkout: no payment is taken and nothing is sent anywhere.</p>' +
+        '<div class="actions"><button type="button" class="btn" id="coCancel">Cancel</button><button type="submit" class="btn solid">Place order &middot; ' + fmt.format(t.total) + '</button></div>' +
+      '</form>';
+    $("modal").hidden = false;
+    document.body.style.overflow = "hidden";
+    $("f-name").focus();
+    $("coCancel").addEventListener("click", closeCheckout);
+    $("coForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var f = e.target;
+      if (!f.checkValidity()) {
+        f.querySelectorAll("input, textarea").forEach(function (x) { if (!x.value) x.placeholder = ""; });
+        f.reportValidity();
+        return;
+      }
+      var oid = "INK-" + Math.floor(100000 + Math.random() * 900000);
+      var pay = f.querySelector('input[name="pay"]:checked').value;
+      var name = $("f-name").value.trim().split(" ")[0];
+      $("sheet").innerHTML = '<div class="success"><div class="tick" aria-hidden="true">&#10003;</div>' +
+        '<h2 id="coTitle">Order placed</h2><p class="sub">Thanks, ' + esc(name) + '. Your order <span class="oid">' + oid + '</span> is confirmed.<br>Payment: ' + pay + '. Total ' + fmt.format(t.total) + '.</p>' +
+        '<button type="button" class="btn solid" id="coDone" style="width:100%">Continue shopping</button></div>';
+      if (coFromCart) { cart = []; save(); renderCart(); }
+      $("coDone").addEventListener("click", closeCheckout);
+      $("coDone").focus();
+    });
+  }
+  function closeCheckout() { $("modal").hidden = true; document.body.style.overflow = ""; }
+  function esc(s) { return s.replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeCheckout(); });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    if (!$("modal").hidden) closeCheckout(); else if ($("drawer").classList.contains("open")) closeCart();
+  });
+
+  /* ---------- Virtual try-on ---------- */
+  var vto = {};
+  function tryOn(id) {
+    if (!window.VirtualTryOn) { toast("Try-on is still loading. Please try again in a moment."); return; }
+    var p = findP(id);
+    var s = document.querySelector("script[data-api-key]");
+    var start = vto[id] ? Promise.resolve(vto[id]) : window.VirtualTryOn.init({
+      apiKey: s ? s.dataset.apiKey : "",
+      product: { name: p.name, price: fmt.format(p.price), garmentImage: new URL(IMG[p.img], location.href).href, category: "tshirt" }
+    }).then(function (inst) { vto[id] = inst; return inst; });
+    start.then(function (inst) { return inst.ready.then(function () { inst.open(); }); })
+      .catch(function () { toast("Could not start try-on. Check your connection and camera access."); });
+  }
+
+  /* ---------- Toast ---------- */
+  var tt;
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(tt); tt = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  renderGrid(); renderCart();
+})();
+</script>
+
+<script src="https://testappi-1.onrender.com/cdn/vto.js" data-api-key="vto_0177c1f9909e9345e1a5063ececb1f15" data-auto="false" defer></script>
+</body>
+</html>
